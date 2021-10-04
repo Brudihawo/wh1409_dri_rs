@@ -1,4 +1,4 @@
-use bytes::{Bytes, Buf};
+use bytes::{Buf, Bytes};
 use chrono::Utc;
 use std::env;
 use std::fs::File;
@@ -18,20 +18,40 @@ fn log(message: String, level: LogLevel) {
     };
 
     let time = Utc::now().format("%H:%M:%S %d.%m.%Y");
-    println!("{} | {}: {}", time, level_str, message);
+    eprintln!("{} | {}: {}", time, level_str, message);
 }
 
 // removes spaces and newlines from string
 // also deletes non-hex-characters
 fn prepare_values(vals: Vec<u8>) -> Bytes {
-    let out: Vec<u8> = vals
+    // filter everything except hex characters
+    let filtered: Vec<u8> = vals
         .into_iter()
-        .filter(|val: &u8| {
-            let v = *val;
-            ((v > 64) && (v < 71)) || // Letters A-F
-            ((v > 47) && (v < 58)) // Numbers 0-9
+        .filter_map(|val: u8| {
+            let v = val;
+            // println!("{}", val);
+            if v > 64 && v < 71 {
+                // Letters A-F
+                Some((v - 65 + 10) as u8)
+            } else if v > 47 && v < 58 {
+                // Numbers 0-9
+                Some((v - 48) as u8)
+            } else {
+                None
+            }
         })
         .collect();
+
+    log(format!("Found {} 4-Bit-Chunks",filtered.len()), LogLevel::DEBUG);
+    let mut out = Vec::<u8>::with_capacity(filtered.len() / 2);
+    out.resize(filtered.len() / 2, 0);
+
+    // Aggregate neighboring 2 hex characters into 1 byte
+    for (idx, val) in filtered.into_iter().enumerate() {
+        let map_idx = (idx as f32 / 2.0).floor() as usize;
+        out[map_idx] += if idx % 2 == 0 { val.checked_mul(16).unwrap() } else { val };
+    }
+
     bytes::Bytes::from(out)
 }
 
@@ -50,12 +70,16 @@ fn read_signal_from_file(filename: &String) -> Result<Bytes, ()> {
 }
 
 fn process_signal(mut signal: Bytes) {
-    while signal.remaining() > 8 {
-        // let status = signal.get_u16_le();
-        let vpos = signal.get_u16();
-        let hpos = signal.get_u16();
-        let pressure = signal.get_u16();
-        println!("{} {} {}", vpos, hpos, pressure);
+    while signal.remaining() >= 8 {
+        let status = signal.get_u16_le();
+        let hpos = signal.get_u16_le();
+        let vpos = signal.get_u16_le();
+        let pressure = signal.get_u16_le();
+        println!("{} {} {} {}",
+                 status,
+                 vpos,
+                 hpos,
+                 pressure);
     }
 }
 

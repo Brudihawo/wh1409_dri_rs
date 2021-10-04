@@ -1,5 +1,5 @@
 [package]
-name = "huion_dri_rs"
+name = "wh1409_dri_rs"
 version = "0.1.0"
 edition = "2018"
 

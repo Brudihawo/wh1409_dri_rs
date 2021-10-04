@@ -6,8 +6,8 @@ main() {
 
   if $(lsusb | grep -q "$DEVICE_NAME"); then
     dev_addr=$(lsusb | grep $DEVICE_NAME | tr -d ':' | awk '{ printf($2":"$4) }')
-    echo "Found $DEVICE_NAME at USB address $dev_addr"
-    echo "Querying signal using usbhid-dump for $TIME_PERIOD_MS ms"
+    echo "Found $DEVICE_NAME at USB address $dev_addr" >> /dev/stderr
+    echo "Querying signal using usbhid-dump for $TIME_PERIOD_MS ms" >> /dev/stderr
 
 
     usbhid-dump -t $TIME_PERIOD_MS -es -a $dev_addr | grep -v "^$" | grep -v ".*STREAM.*"

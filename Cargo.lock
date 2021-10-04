@@ -28,15 +28,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "huion_dri_rs"
-version = "0.1.0"
-dependencies = [
- "bytes",
- "chrono",
- "unicode-segmentation",
-]
-
-[[package]]
 name = "libc"
 version = "0.2.103"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -83,6 +74,15 @@ name = "wasi"
 version = "0.10.0+wasi-snapshot-preview1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "1a143597ca7c7793eff794def352d41792a93c481eb1042423ff7ff72ba2c31f"
+
+[[package]]
+name = "wh1409_dri_rs"
+version = "0.1.0"
+dependencies = [
+ "bytes",
+ "chrono",
+ "unicode-segmentation",
+]
 
 [[package]]
 name = "winapi"

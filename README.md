@@ -35,7 +35,8 @@ mostly for debugging / signal generation purposes
 | lsusb         | find device name        |
 | usbhid-dump   | generate sample signal  |
 | grep, tr, awk | filtering sample signal |
-| ninja, cmake  | compilation             |
+| cmake         | compilation             |
+| ninja         | optional, compilation   |
 
 # How-To
 ## Generating Sample Data (./scripts/generate\_sample\_data.sh)
@@ -58,12 +59,16 @@ Place them in `./data/in/` and run `./scripts/process_all_in_signals.sh`. This w
 process all of them and place output files in `./data/out/`.
 
 ## Compilation
-Compilation is done via cmake and ninja:
-```bash
-mkdir build
-cmake -G Ninja -B build -S .
-ninja -C build
-```
+The `makefile` is there for convenience. If ninja is installed, compilation will use ninja.
+If not, standard unix makefiles will be used.
+
+| Target      | Description                          |
+|-------------|--------------------------------------|
+| clean       | Remove build output                  |
+| run\_cmake  | Run cmake (duh)                      |
+| parse\_text | Text signal parsing utility          |
+| usbmon      | USB monitoring utility (coming soon) |
+
 
 ## Better Development with ccls
 After generating cmake files, use

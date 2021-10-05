@@ -3,23 +3,15 @@
 #include <stdlib.h>
 
 #include "logging.h"
+#include "pen.h"
 
 #define LINE_SIZE 25
-#define PEN_UP 32775
-#define PEN_DOWN 33031
 
-/* @brief enum containing Pen status while pen is in range of tablet
- *        can be UP or DOWN
+/* @brief get file size in bytes
+ *
+ * @param fp: file pointer
+ * @return file size in bytes
  */
-typedef enum { UP, DOWN } PenStatus;
-
-typedef struct {
-  PenStatus status;
-  uint hpos;
-  uint vpos;
-  uint pressure;
-} PenInfo;
-
 long get_filesize(FILE *fp) {
   long cur_pos = ftell(fp);
   fseek(fp, 0, SEEK_END);
@@ -28,19 +20,18 @@ long get_filesize(FILE *fp) {
   return sz;
 }
 
-/* @brief get int form 16 bits in the form of 2 chars
+/* @brief Parse a line of text to PenInfo
  *
- * @param ms: Most significant byte
- * @param ls: least significant byte
+ * @param line:  line to process
+ * @param lsize: size of lin
+ *
+ * @return PenInfo
  */
-static inline uint uint_from_u16_le(char ms, char ls) {
-  return (uint8_t)ms * 256 + (uint8_t)ls;
-}
-
 PenInfo parse_line(char *line, int lsize) {
   uint8_t reduced[8] = {0, 0, 0, 0, 0, 0, 0, 0};
 
   int cur_pos = 0;
+
   for (int i = 0; i < lsize; i++) {
     if ((64 < line[i]) && (line[i] < 71)) { // Letters A-F
       reduced[cur_pos / 2] += ((uint8_t)line[i] - (uint8_t)65 + (uint8_t)10) *
@@ -53,32 +44,10 @@ PenInfo parse_line(char *line, int lsize) {
     }
   }
 
-  uint status = uint_from_u16_le(reduced[1], reduced[0]);
-
-  if (status != PEN_UP && status != PEN_DOWN) {
-    mylog(LOG_ERR, "Unknown Status %u", status);
-    exit(0);
-  }
-
-  PenInfo info = {
-      .hpos = uint_from_u16_le(reduced[3], reduced[2]),
-      .vpos = uint_from_u16_le(reduced[5], reduced[4]),
-      .pressure = uint_from_u16_le(reduced[7], reduced[6]),
-      .status = (status == 32880 ? UP : DOWN),
-  };
-
-  return info;
+  return peninfo_from_bytes(reduced);
 }
 
-/* @brief write PenInfo string representation to buffer
- *        status (0/1) pressure hpos vpos
- */
-void peninfo_to_chars(PenInfo info, char *buf, int bufsize) {
-  snprintf(buf, bufsize, "%d %-5u %-5u %-5u",
-           info.status == UP ? 1 : 0, info.pressure, info.hpos, info.vpos);
-}
-
-int main(int argc, char** argv) {
+int main(int argc, char **argv) {
   char line[LINE_SIZE];
   FILE *fp;
 
@@ -101,7 +70,8 @@ int main(int argc, char** argv) {
 
     mylog(LOG_DEBUG, "%ld %s", cur_pos, line);
     info = parse_line(line, LINE_SIZE);
-    printf("%9u %9u %9u %9u\n", info.status, info.vpos, info.hpos, info.pressure);
+    printf("%9u %9u %9u %9u\n", info.status, info.vpos, info.hpos,
+           info.pressure);
     cur_pos += LINE_SIZE;
   }
 

@@ -37,8 +37,8 @@ mostly for debugging / signal generation purposes
 | grep, tr, awk | filtering sample signal |
 | ninja, cmake  | compilation             |
 
-# How-To of Scripts found in ./scripts
-## Generating Sample Data
+# How-To
+## Generating Sample Data (./scripts/generate\_sample\_data.sh)
 `generate_sample_data.sh` is a small script to generate a stream of bytes (as hex
 string) mostly for debugging purposes (e.g. to have sample data to use repeatedly).
 Intended use is like this:
@@ -47,7 +47,7 @@ generate_sample_data.sh > sample_signal.txt
 ```
 Intention is to then be able to decode that using a decoding function
 
-## Ploting processed Outputs
+## Ploting processed Outputs (./scripts/plot\_output.py)
 `plot_output.py` can be used to plot the processed signals. Expects values to be
 in format: (status, vertical, horizontal, pressure), one datapoint per line, separated by a
 single space.
@@ -56,6 +56,21 @@ single space.
 After generating sample signals, you might want to process all of them as a batch.
 Place them in `./data/in/` and run `./scripts/process_all_in_signals.sh`. This will
 process all of them and place output files in `./data/out/`.
+
+## Compilation
+Compilation is done via cmake and ninja:
+```bash
+mkdir build
+cmake -G Ninja -B build -S .
+ninja -C build
+```
+
+## Better Development with ccls
+After generating cmake files, use
+```bash
+ninja -C build -t compdb > compile_commands.json
+```
+in the root directory. `ccls` can then use the generated compilation commands.
 
 # Signal Structure
 Each Stream Signal is Composed of 8 Bytes:

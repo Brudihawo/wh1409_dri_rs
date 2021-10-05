@@ -12,10 +12,12 @@ CURRENT STAGE IS FIGURING OUT HOW THE SIGNAL WORKS.
 1. [x] Acquire sample data using usbhid-dump (This is a script now.)
     1. Find device adress using `lsusb`
     2. Use `usbhid-dump -es -t 1000 -a <address>` to generate 1s of Signal data
-2. Create function in Rust for reading and parsing that data
-3. Find out how to directly read from usb
-4. Find out how to set mouse position etc.
-5. Find out how interaction of drivers with drawing programs like GIMP works
+2. [x] Create function in Rust for reading and parsing that data
+3. [x] Switch to C
+4. [ ] Figure out how to write a kernel module usb driver
+5. [ ] Find out how to directly read from usb
+6. [ ] Find out how to set mouse position etc.
+7. [ ] Find out how interaction of drivers with drawing programs like GIMP works
 
 ## TODOs
 - [x] What is going wrong with signal processing? Should be 0x07FF = 2048 at
@@ -33,6 +35,7 @@ mostly for debugging / signal generation purposes
 | lsusb         | find device name        |
 | usbhid-dump   | generate sample signal  |
 | grep, tr, awk | filtering sample signal |
+| ninja, cmake  | compilation             |
 
 # How-To of Scripts found in ./scripts
 ## Generating Sample Data
@@ -54,9 +57,7 @@ After generating sample signals, you might want to process all of them as a batc
 Place them in `./data/in/` and run `./scripts/process_all_in_signals.sh`. This will
 process all of them and place output files in `./data/out/`.
 
-
 # Signal Structure
-
 Each Stream Signal is Composed of 8 Bytes:
 1. Two Bytes for the Status:
     1. `07 80` if Pen is lifted and in range of tablet (-> move mouse)

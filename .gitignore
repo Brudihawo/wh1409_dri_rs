@@ -1,3 +1,10 @@
-/target
-/data/
+# data files
+data/
+
+# build directory
+build/*
+
+# ccls
+.ccls-cache/
+compile_commands.json
 

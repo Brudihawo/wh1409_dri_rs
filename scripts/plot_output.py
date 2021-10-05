@@ -7,7 +7,8 @@ from matplotlib import pyplot as plt
 
 fname = sys.argv[1]
 
-datapoints = pd.read_table(fname, sep=" ",
+datapoints = pd.read_table(fname, sep="\s+",
+                           skiprows=1,
                            names=["status", "vert", "horiz", "pressure"])
 
 fig, ax = plt.subplots(2, 2)

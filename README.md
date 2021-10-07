@@ -7,6 +7,8 @@ This is largely an exercise for fun and might not produce usable driver.
 THIS IS A WORK IN PROGRESS AND BY NO MEANS DONE.
 CURRENT STAGE IS FIGURING OUT HOW THE SIGNAL WORKS.
 
+Current Status: Live reading and signal parsing from usb device is working.
+Next: Controlling mouse and pressure for gimp etc.
 
 # Plan of Action
 1. [x] Acquire sample data using usbhid-dump (This is a script now.)
@@ -14,18 +16,23 @@ CURRENT STAGE IS FIGURING OUT HOW THE SIGNAL WORKS.
     2. Use `usbhid-dump -es -t 1000 -a <address>` to generate 1s of Signal data
 2. [x] Create function in Rust for reading and parsing that data
 3. [x] Switch to C
-4. [ ] Figure out how to write a kernel module usb driver
-5. [ ] Find out how to directly read from usb
+4. [x] Find out how to directly read from usb
+5. [ ] Create application for active control of mouse
+6. [ ] Introduce config file and mapping areas
+5. [ ] Add Pressure controls
+5. [ ] Figure out how to write a kernel module usb driver
 6. [ ] Find out how to set mouse position etc.
 7. [ ] Find out how interaction of drivers with drawing programs like GIMP works
 
 ## TODOs
-- [x] What is going wrong with signal processing? Should be 0x07FF = 2048 at
+- [x] What is going wrong with signal processing? Should be 0x07FF = 2047 at
 max pressure signal but is ~14500. WTF? -> I fucked up the signal parsing from text
 - [x] Figure out endianness of signal and processing -> Little Endian!
 - [x] Figure out signed-ness of signal (current assumption = unsigned maybe wrong) -> Unsigned
-- [ ] Better plotting for signal analysis
-- [ ] Figure out if sent signal is an offset of some sort
+- [ ] Better plotting for signal analysis (maybe live plotting)
+- [x] Figure out if sent signal is an offset of some sort
+- [x] Implement proper exit codes in wh1409parse\_ts
+- [x] How do reading interrupts work? "The direction of the transfer ist inferred from the direciton of bits of the entpoint address?"
 
 # Dependencies
 mostly for debugging / signal generation purposes
@@ -87,6 +94,9 @@ Each Stream Signal is Composed of 8 Bytes:
 
 ## Position Encoding
 Figured out Position encoding:
+- Vertical position is encoded by integers between 0 and 34499
+- Horizontal position is encoded by integers between 0 and 55200
+
 ![Vertical Movement](./img/vertical_movement.png)
 ![Horizontal Movement](./img/horizontal_movement.png)
 
@@ -95,3 +105,16 @@ Limited at high end to 0x07FF (2047), probably due to sensor resolution. Low thr
 be limited through calibration in device firmware. Although plot shows no jumping in the
 signal. This indicates that no thresholding is taking place.
 ![Pressure](./img/pressure_test.png)
+
+# libusb Workflow
+This is what i understand so far. Shit might be wrong or unsafe tho.
+
+1. Initialise libusb context
+2. Find device through device descriptor / product or vendor ID
+3. Open the device and obtain a device handle for use with transfers
+4. Claim an interface for transfers / detach kernel driver
+5. Perform transfer
+6. free interface / reattach kernel driver
+7. Close usb device
+8. Deinitialise context
+

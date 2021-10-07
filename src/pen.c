@@ -8,7 +8,7 @@
  *        status (0/1) pressure hpos vpos
  */
 void peninfo_to_chars(PenInfo info, char *buf, int bufsize) {
-  snprintf(buf, bufsize, "%d %-5u %-5u %-5u", info.status == UP ? 1 : 0,
+  snprintf(buf, bufsize, "%d %5u %5u %5u", info.status == UP ? 1 : 0,
            info.pressure, info.hpos, info.vpos);
 }
 
@@ -17,14 +17,16 @@ void peninfo_to_chars(PenInfo info, char *buf, int bufsize) {
  * @param ms: Most significant byte (as char)
  * @param ls: least significant byte (as char)
  */
-static inline uint8_t uint_from_u16_le(char ms, char ls) {
-  return (uint8_t)ms * 256 + (uint8_t)ls;
+static inline uint16_t uint_from_u16_le(uint8_t ms, uint8_t ls) {
+  if (ls > 255) {
+  }
+  return (uint16_t)ms * 256 + (uint16_t)ls;
 }
 
 /* @brief convert 8 Bytes in the form of uint8_t to PenInfo
  */
 PenInfo peninfo_from_bytes(uint8_t *bytes) {
-  uint8_t status = uint_from_u16_le(bytes[1], bytes[0]);
+  uint16_t status = uint_from_u16_le(bytes[1], bytes[0]);
 
   if (status != PEN_UP && status != PEN_DOWN) {
     mylog(LOG_ERR, "Unknown Status %u", status);

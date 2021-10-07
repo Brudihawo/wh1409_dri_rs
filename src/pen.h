@@ -1,7 +1,7 @@
 #include "stdint.h"
 
-#define PEN_UP (uint8_t)32775
-#define PEN_DOWN (uint8_t)33031
+#define PEN_UP (uint16_t)32775
+#define PEN_DOWN (uint16_t)33031
 
 /* @brief enum containing pen status while in range of tablet
  *        can be UP or DOWN
@@ -12,9 +12,9 @@ typedef enum { UP, DOWN } PenStatus;
  */
 typedef struct {
   PenStatus status;
-  uint8_t hpos;
-  uint8_t vpos;
-  uint8_t pressure;
+  uint16_t hpos;
+  uint16_t vpos;
+  uint16_t pressure;
 } PenInfo;
 
 void peninfo_to_chars(PenInfo info, char *buf, int bufsize);

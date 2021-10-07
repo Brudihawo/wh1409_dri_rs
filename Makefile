@@ -2,6 +2,7 @@ SHELL=/usr/bin/bash
 .DEFAULT_GOAL := parse_text
 .SILENT: clean
 
+CMAKE_BUILD_TYPE ?= RELEASE
 CMAKE_GENERATOR ?= $(shell (command -v ninja > /dev/null 2>&1 && echo "Ninja") ||\
 										 echo "Unix Makefiles")
 
@@ -30,7 +31,7 @@ clean:
 
 run_cmake: clean
 	@echo "=========[[Using "$(CMAKE_GENERATOR)"]]========="
-	cmake -G "$(CMAKE_GENERATOR)" -B $(BUILD_DIR) -S .
+	cmake -G "$(CMAKE_GENERATOR)" -B $(BUILD_DIR) -S . -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}
 
 parse_text:
 	$(call prepare_build)

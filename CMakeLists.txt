@@ -11,6 +11,7 @@ target_sources(
   parse_text PUBLIC
   ./src/logging.c
   ./src/pen.c
+  ./src/globals.c
 )
 target_include_directories(parse_text PUBLIC ./src)
 
@@ -20,6 +21,7 @@ target_sources(
   ./src/logging.c
   ./src/pen.c
   ./src/util.c
+  ./src/globals.c
 )
 target_include_directories(usbmon PUBLIC ./src)
 set_target_properties(usbmon PROPERTIES OUTPUT_NAME "wh1409_usbmon")

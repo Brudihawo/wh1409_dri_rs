@@ -4,6 +4,10 @@
 
 #include "libusb-1.0/libusb.h"
 
+#include "X11/X.h"
+#include "X11/Xlib.h"
+#include "X11/Xutil.h"
+
 #include "logging.h"
 #include "pen.h"
 
@@ -11,14 +15,36 @@
 
 #include "util.h"
 
-
 #define NOT_FOUND -1
 #define USB_TIMEOUT 10
 #define SIG_LENGTH 8
 #define USB_INTERFACE 0
 #define USB_ENDPOINT 0x81
 
+typedef struct {
+  int x, y;
+} Pos;
+
 static volatile int run = 0;
+
+static const Pos maxpos = {
+  .x = 3840,
+  .y = 2160,
+};
+
+static const Pos maxsig = {
+  .x = 55200,
+  .y = 34500,
+};
+
+static Pos normalize_pos(PenInfo info) {
+  Pos pos = {
+    .x = (int) (maxpos.x * ((double)info.hpos / (double)maxsig.x)),
+    .y = (int) (maxpos.y * ((double)info.vpos / (double)maxsig.y)),
+  };
+
+  return pos;
+}
 
 void handle_int(int dummy) {
   run = 0;
@@ -52,6 +78,13 @@ void devicelist_log(libusb_device **dev_list, int device_count) {
 
 
 int main(int argc, char **argv) {
+  Display *dspl;
+  Window root_window;
+
+  dspl = XOpenDisplay(0);
+  root_window = XRootWindow(dspl, 0);
+  XSelectInput(dspl, root_window, KeyReleaseMask);
+
   libusb_init(NULL);
   libusb_device **devices;
   int detatched_driver = 0;
@@ -99,6 +132,9 @@ int main(int argc, char **argv) {
     }
 
     info = peninfo_from_bytes(data);
+    Pos pos = normalize_pos(info);
+    XWarpPointer(dspl, None, root_window, 0, 0, 0, 0, pos.x, pos.y);
+    XFlush(dspl);
     peninfo_to_chars(info, desc_buf, 24);
     mylog(LOG_DEBUG, "Got %i Bytes: %s", sent_size, desc_buf);
   }
@@ -113,5 +149,8 @@ int main(int argc, char **argv) {
   libusb_close(pt_dev_handle);
   libusb_free_device_list(devices, 1);
   libusb_exit(NULL);
+
+  XDestroyWindow(dspl, root_window);
+  XCloseDisplay(dspl);
   return EXIT_SUCCESS;
 }

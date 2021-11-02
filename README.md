@@ -95,7 +95,7 @@ Each Stream Signal is Composed of 8 Bytes:
 
 ## Position Encoding
 Figured out Position encoding:
-- Vertical position is encoded by integers between 0 and 34499
+- Vertical position is encoded by integers between 0 and 34500
 - Horizontal position is encoded by integers between 0 and 55200
 
 ![Vertical Movement](./img/vertical_movement.png)

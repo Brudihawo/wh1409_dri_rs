@@ -67,7 +67,7 @@ process all of them and place output files in `./data/out/`.
 
 ## Compilation
 The `makefile` is there for convenience. If ninja is installed, compilation will use ninja.
-If not, standard unix makefiles will be used.
+If not, standard unix makefiles will be used. 
 
 | Target      | Description                          |
 |-------------|--------------------------------------|
@@ -75,6 +75,7 @@ If not, standard unix makefiles will be used.
 | run\_cmake  | Run cmake (duh)                      |
 | parse\_text | Text signal parsing utility          |
 | usbmon      | USB monitoring utility (coming soon) |
+| targets     | Print all make targets               |
 
 
 ## Better Development with ccls

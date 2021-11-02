@@ -42,3 +42,11 @@ usbmon:
 	$(call build_cmd usbmon)
 
 all: run_cmake parse_text usbmon
+
+targets:
+	@echo "Make Targets:"
+	@echo "============"
+	@echo "clean       Clean up"
+	@echo "run_cmake   Clean and run CMake generator"
+	@echo "usbmon      Live USB signal Monitor"
+	@echo "parse_text  Text signal Parser"

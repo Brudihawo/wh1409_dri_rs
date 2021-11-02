@@ -41,12 +41,17 @@ usbmon:
 	$(call prepare_build)
 	$(call build_cmd usbmon)
 
-all: run_cmake parse_text usbmon
+active_driver:
+	$(call prepare_build)
+	$(call build_cmd active_driver)
+
+all: run_cmake parse_text usbmon active_driver
 
 targets:
 	@echo "Make Targets:"
 	@echo "============"
-	@echo "clean       Clean up"
-	@echo "run_cmake   Clean and run CMake generator"
-	@echo "usbmon      Live USB signal Monitor"
-	@echo "parse_text  Text signal Parser"
+	@echo "clean          Clean up"
+	@echo "run_cmake      Clean and run CMake generator"
+	@echo "usbmon         Live USB signal Monitor"
+	@echo "parse_text     Text signal Parser"
+	@echo "active_driver  Active driver application"

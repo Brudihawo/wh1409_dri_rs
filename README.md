@@ -119,3 +119,22 @@ This is what i understand so far. Shit might be wrong or unsafe tho.
 7. Close usb device
 8. Deinitialise context
 
+# X11 Workflow
+1. Create display
+2. Create window
+3. Do stuff
+4. Deinitialise window
+5. Deinitialise display
+
+# Linux Mouse Button Numbering
+| Button | Description   |
+|--------|---------------|
+| 1      | Left Button   |
+| 2      | Middle Button |
+| 3      | Right Button  |
+| 4      | Scroll Up     |
+| 5      | Scroll Down   |
+| 6      | Scroll Left   |
+| 7      | Scroll Right  |
+| 8      | Browser Back  |
+| 9      | Browser Fore  |

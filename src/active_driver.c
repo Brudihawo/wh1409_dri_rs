@@ -1,12 +1,14 @@
 #include "signal.h"
 #include "stdio.h"
 #include "stdlib.h"
+#include "stdbool.h"
 
 #include "libusb-1.0/libusb.h"
 
 #include "X11/X.h"
 #include "X11/Xlib.h"
 #include "X11/Xutil.h"
+#include "X11/extensions/XTest.h"
 
 #include "logging.h"
 #include "pen.h"
@@ -135,8 +137,12 @@ int main(int argc, char **argv) {
     Pos pos = normalize_pos(info);
     XWarpPointer(dspl, None, root_window, 0, 0, 0, 0, pos.x, pos.y);
     XFlush(dspl);
-    peninfo_to_chars(info, desc_buf, 24);
-    mylog(LOG_DEBUG, "Got %i Bytes: %s", sent_size, desc_buf);
+    bool down = info.status == DOWN ? true : false;
+    // 1 is left mouse button
+    XTestFakeButtonEvent(dspl, 1, down, CurrentTime);
+    XFlush(dspl);
+    // TODO: Handle tablet and pen buttons
+    //       maybe using F-keys
   }
 
   if (detatched_driver) {

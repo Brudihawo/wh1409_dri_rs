@@ -40,6 +40,7 @@ set_target_properties(active_driver PROPERTIES OUTPUT_NAME "wh1409active_dri")
 target_link_libraries(active_driver -lusb-1.0 -ludev)
 find_package(X11 REQUIRED)
 target_link_libraries(active_driver ${X11_LIBRARIES})
+target_link_libraries(active_driver ${X11_XTest_LIB})
 target_include_directories(active_driver INTERFACE ${X11_INCLUDE_DIR})
 
 message(STATUS "BUILD TYPE: ${CMAKE_BUILD_TYPE}")

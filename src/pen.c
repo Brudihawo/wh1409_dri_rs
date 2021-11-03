@@ -29,7 +29,7 @@ PenInfo peninfo_from_bytes(uint8_t *bytes) {
   uint16_t status = uint_from_u16_le(bytes[1], bytes[0]);
 
   if (status != PEN_UP && status != PEN_DOWN) {
-    mylog(LOG_ERR, "Unknown Status %u", status);
+    mylog(LOG_ERR, "Unknown Status %x", status);
     exit(0);
   }
 
